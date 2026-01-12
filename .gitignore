@@ -55,5 +55,5 @@ CMakeUserPresets.json
 *-prefix/
 
 ### Geany ###
-.geany
+*.geany
 bin/
