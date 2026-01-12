@@ -56,3 +56,4 @@ CMakeUserPresets.json
 
 ### Geany ###
 .geany
+bin/
