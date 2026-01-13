@@ -54,6 +54,12 @@ CMakeUserPresets.json
 # External projects
 *-prefix/
 
-### Geany ###
+### Geany IDE###
 *.geany
-bin/
+*.sh
+
+### Build directories ###
+build-clang/
+build-gcc/
+*.clang-format
+*.clang-tidy
