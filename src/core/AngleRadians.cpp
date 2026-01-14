@@ -1,54 +1,57 @@
 #include "core/AngleRadians.hpp"
-#include <cmath>
-#include <iomanip>
-#include <sstream>
 
 namespace Core
 {
 
-AngleRadians::AngleRadians (int integerPart, int fractionalPart)
+AngleRadians::AngleRadians (First integerPart, Second fractionalPart)
     : Pair (integerPart, fractionalPart)
 {
   normalize ();
 }
 
 void
-AngleRadians::increase (int val)
+AngleRadians::increase (std::intmax_t val)
 {
-  second_ += val;
+  second_ += Second{ val };
   normalize ();
 }
 
 void
-AngleRadians::decrease (int val)
+AngleRadians::decrease (std::intmax_t val)
 {
-  second_ -= val;
+  second_ -= Second{ val };
   normalize ();
 }
 
 void
 AngleRadians::normalize ()
 {
-  // Handle carry over from fractional to integer
-  if (second_ >= PRECISION)
+  auto rawFirst = static_cast<std::intmax_t> (first_);
+  auto rawSecond = static_cast<std::intmax_t> (second_);
+
+  if (rawSecond >= PRECISION)
     {
-      first_ += (second_ / PRECISION);
-      second_ %= PRECISION;
+      rawFirst += (rawSecond / PRECISION);
+      rawSecond %= PRECISION;
     }
 
-  // Handle borrowing for negatives
-  while (second_ < 0)
+  while (rawSecond < 0)
     {
-      second_ += PRECISION;
-      first_--;
+      rawSecond += PRECISION;
+      rawFirst--;
     }
+
+  first_ = First{ rawFirst };
+  second_ = Second{ rawSecond };
 }
 
 std::string
 AngleRadians::toString () const
 {
+  auto rawFirst = static_cast<std::intmax_t> (first_);
+  auto rawSecond = static_cast<std::intmax_t> (second_);
   std::ostringstream oss;
-  oss << first_ << "." << std::setfill ('0') << std::setw (3) << second_
+  oss << rawFirst << "." << std::setfill ('0') << std::setw (3) << rawSecond
       << " rad";
   return oss.str ();
 }

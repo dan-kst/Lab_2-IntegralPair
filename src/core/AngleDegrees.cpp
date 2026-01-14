@@ -5,43 +5,43 @@
 namespace Core
 {
 
-AngleDegrees::AngleDegrees (int deg, int min) : Pair (deg, min)
+AngleDegrees::AngleDegrees (First deg, Second min) : Pair (deg, min)
 {
   normalize ();
 }
 
 void
-AngleDegrees::increase (int val)
+AngleDegrees::increase (std::intmax_t val)
 {
-  second_ += val;
+  second_ += Second{ val };
   normalize ();
 }
 
 void
-AngleDegrees::decrease (int val)
+AngleDegrees::decrease (std::intmax_t val)
 {
-  second_ -= val;
+  second_ -= Second{ val };
   normalize ();
 }
 
 void
 AngleDegrees::normalize ()
 {
-  // 1. Convert everything to total minutes
-  int totalMinutes = first_ * 60 + second_;
+  const std::intmax_t SECONDS_IN_MINUTE = 60;
+  const std::intmax_t FULL_DEGREE_MINS = 21'600;
 
-  // 2. Handle negative results (Modulo in C++ can be tricky with negatives)
-  while (totalMinutes < 0)
+      intmax_t total
+      = (static_cast<std::intmax_t> (first_) * SECONDS_IN_MINUTE)
+        + static_cast<std::intmax_t> (second_);
+
+  if (total < 0)
     {
-      totalMinutes += 360 * 60;
+      total = FULL_DEGREE_MINS + (total % FULL_DEGREE_MINS);
     }
+  total %= FULL_DEGREE_MINS;
 
-  // 3. Wrap degrees around 360
-  totalMinutes %= (360 * 60);
-
-  // 4. Extract degrees and minutes
-  first_ = totalMinutes / 60;
-  second_ = totalMinutes % 60;
+  first_ = First{ total / SECONDS_IN_MINUTE };
+  second_ = Second{ total % SECONDS_IN_MINUTE };
 }
 
 std::string

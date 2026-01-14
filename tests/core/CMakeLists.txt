@@ -1,6 +1,8 @@
 # Define the test executable here
 add_executable(core_tests
     angle_radians_tests.cpp
+    angle_degrees_tests.cpp
+    factory_tests.cpp
 )
 
 target_link_libraries(core_tests 

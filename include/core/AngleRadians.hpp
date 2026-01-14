@@ -2,6 +2,7 @@
 #define ANGLE_RADIANS_HPP
 
 #include "Pair.hpp"
+#include <iomanip>
 
 namespace Core
 {
@@ -16,18 +17,19 @@ private:
   static constexpr int PRECISION = 1000;
 
 public:
-  AngleRadians (int integerPart = 0, int fractionalPart = 0);
+  AngleRadians (First integerPart = First{ 0 },
+                Second fractionalPart = Second{ 0 });
 
   /// @brief Adds to the fractional part and carries over to integer.
-  void increase (int val) override;
+  void increase (std::intmax_t val) override;
 
   /// @brief Subtracts from the fractional part and borrows from integer.
-  void decrease (int val) override;
+  void decrease (std::intmax_t val) override;
 
-  std::string toString () const override;
+  [[nodiscard]] auto toString () const -> std::string override;
 
-  PairType
-  getType () const override
+  [[nodiscard]] auto
+  getType () const -> PairType override
   {
     return PairType::Radians;
   }

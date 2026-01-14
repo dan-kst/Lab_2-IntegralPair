@@ -11,7 +11,6 @@ FetchContent_Declare(
   GIT_TAG        v1.14.0
 )
 
-# Move this here so GTest is compiled once for all sub-tests
 FetchContent_MakeAvailable(googletest)
 
 # Subdirectories

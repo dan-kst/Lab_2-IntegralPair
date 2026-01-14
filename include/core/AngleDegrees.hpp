@@ -13,18 +13,18 @@ class AngleDegrees : public Pair
 public:
   /// @brief Constructor with normalization (e.g., 70 minutes -> 1 degree 10
   /// minutes)
-  AngleDegrees (int deg = 0, int min = 0);
+  AngleDegrees (First deg = First{ 0 }, Second min = Second{ 0 });
 
   /// @brief Increase total minutes, then normalize.
-  void increase (int val) override;
+  void increase (std::intmax_t val) override;
 
   /// @brief Decrease total minutes, then normalize.
-  void decrease (int val) override;
+  void decrease (std::intmax_t val) override;
 
-  std::string toString () const override;
+  [[nodiscard]] auto toString () const -> std::string override;
 
-  PairType
-  getType () const override
+  [[nodiscard]] auto
+  getType () const -> PairType override
   {
     return PairType::Degrees;
   }

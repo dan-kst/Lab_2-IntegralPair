@@ -22,7 +22,7 @@ public:
   /// @param s The second integral value (Minutes or Fractional part).
   /// @return A unique_ptr to the created object.
   static std::unique_ptr<Pair>
-  create (PairType type, int f, int s)
+  create (PairType type, First f, Second s)
   {
     switch (type)
       {
