@@ -18,6 +18,11 @@ main ()
   dataStorage.push_back (
       NumberFactory::create (PairType::Radians, First{ 1 }, Second{ 570 }));
 
+  CROW_ROUTE (app, "/") ([] (const crow::request &, crow::response &res) {
+    res.set_static_file_info ("src/web/index.html");
+    res.end ();
+  });
+
   /// @route GET /api/numbers
   CROW_ROUTE (app, "/api/numbers")
   ([&dataStorage] () {
