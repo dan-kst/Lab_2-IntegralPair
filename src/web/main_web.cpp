@@ -23,6 +23,24 @@ main ()
     res.end ();
   });
 
+  /// @route POST /api/create/<int>/<int>/<int>
+  CROW_ROUTE (app, "/api/create/<int>/<int>/<int>")
+      .methods (crow::HTTPMethod::POST) (
+          [&dataStorage] (int typeInt, int f, int s) {
+            try
+              {
+                auto type = static_cast<PairType> (typeInt);
+                dataStorage.push_back (NumberFactory::create (
+                    type, First{ static_cast<std::intmax_t> (f) },
+                    Second{ static_cast<std::intmax_t> (s) }));
+                return crow::response (201);
+              }
+            catch (const std::exception &e)
+              {
+                return crow::response (400, e.what ());
+              }
+          });
+
   /// @route GET /api/numbers
   CROW_ROUTE (app, "/api/numbers")
   ([&dataStorage] () {
