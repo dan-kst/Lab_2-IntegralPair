@@ -35,5 +35,18 @@ main ()
     return crow::json::wvalue (jsonList);
   });
 
+  /// @route POST /api/adjust/<int>/<int>
+  CROW_ROUTE (app, "/api/adjust/<int>/<int>")
+      .methods (crow::HTTPMethod::POST,
+                crow::HTTPMethod::GET) ([&dataStorage] (int index, int val) {
+        if (index < 0 || index >= static_cast<int> (dataStorage.size ()))
+          {
+            return crow::response (404, "Object index not found");
+          }
+        dataStorage[static_cast<std::size_t> (index)]->increase (val);
+        return crow::response (
+            200, dataStorage[static_cast<std::size_t> (index)]->toString ());
+      });
+
   app.port (18080).loglevel (crow::LogLevel::Debug).multithreaded ().run ();
 }
