@@ -36,9 +36,14 @@
     <!-- Controls -->
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-xl font-bold">Active Objects</h2>
-      <button class="text-blue-600 hover:text-blue-800 text-sm font-semibold flex items-center">
-        <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> Increase All by 10
-      </button>
+      <div class="flex justify-end-safe">
+        <button onclick="modifyAll(10)" class="text-blue-600 hover:text-blue-800 text-sm px-4 font-semibold flex items-center">
+          <i class="fa-solid fa-arrow-up mr-2"></i> Increase All by 10
+        </button>
+        <button onclick="modifyAll(-10)" class="text-blue-600 hover:text-blue-800 text-sm px-4 font-semibold flex items-center">
+          <i class="fa-solid fa-arrow-down mr-2"></i> Decrease All by 10
+        </button>
+      </div>
     </div>
 
     <!-- List Container -->
@@ -53,9 +58,9 @@
     const API =
     {
       get: () => fetch('/api/numbers').then(r => r.json()),
-      increase: (idx, val) => fetch(`/api/increase/${idx}/${val}`, { method: 'POST' }),
+      increase: (idx, val) => fetch(`/api/adjust/${idx}/${val}`, { method: 'POST' }),
       create: (type, f, s) => fetch(`/api/create/${type}/${f}/${s}`, { method: 'POST' }),
-      modifyAll: (val) => fetch(`/api/modify_all/${val}`, { method: 'POST' })
+      modifyAll: (val) => fetch(`/api/adjust/${val}`, { method: 'POST' })
     };
 
       async function refresh()
@@ -81,10 +86,10 @@
                   <div class="text-xs text-slate-400 mt-1">Memory Index: ${idx} | Raw: [${item.first}, ${item.second}]</div>
                 </div>
                 <div class="flex gap-2">
-                  <button class="w-10 h-10 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors">
+                  <button onclick="adjust(${idx}, -10)" class="w-10 h-10 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors">
                      -
                   </button>
-                  <button class="w-10 h-10 flex items-center justify-center rounded-lg bg-slate-900 hover:bg-slate-800 text-white transition-colors">
+                  <button onclick="adjust(${idx}, 10)" class="w-10 h-10 flex items-center justify-center rounded-lg bg-slate-900 hover:bg-slate-800 text-white transition-colors">
                      +
                   </button>
                 </div>
@@ -95,6 +100,17 @@
         }
       }
 
+      async function adjust(idx, val)
+      {
+        await API.increase(idx, val);
+        refresh();
+      }
+
+      async function modifyAll(val)
+      {
+        await API.modifyAll(val);
+        refresh();
+      }
     refresh();
   </script>
 </body>

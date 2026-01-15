@@ -53,5 +53,16 @@ main ()
             200, dataStorage[static_cast<std::size_t> (index)]->toString ());
       });
 
+  /// @route POST /api/adjust/<int>
+  CROW_ROUTE (app, "/api/adjust/<int>")
+      .methods (crow::HTTPMethod::POST,
+                crow::HTTPMethod::GET) ([&dataStorage] (int val) {
+        for (auto &obj : dataStorage)
+          {
+            obj->increase (val);
+          }
+        return crow::response (200, "All objects modified");
+      });
+
   app.port (18080).loglevel (crow::LogLevel::Debug).multithreaded ().run ();
 }
