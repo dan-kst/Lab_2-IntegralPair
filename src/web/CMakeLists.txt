@@ -37,6 +37,7 @@ target_compile_definitions(web_app PRIVATE ASIO_STANDALONE CROW_HAS_ASIO)
 
 target_link_libraries(web_app 
     PRIVATE 
-    core_logic 
+    core_logic
+    database_logic
     Crow::Crow
 )

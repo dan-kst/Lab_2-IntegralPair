@@ -1,5 +1,6 @@
 #include "core/Factory.hpp"
 #include "crow.h"
+#include "database/IStorage.hpp"
 #include <memory>
 #include <string>
 #include <vector>
@@ -9,14 +10,19 @@ using namespace Core;
 int
 main ()
 {
-  crow::SimpleApp app;
-  std::vector<std::unique_ptr<Pair> > dataStorage;
+  auto storage = createStorage ("lab3.db");
 
-  // Initial Seed Data
-  dataStorage.push_back (
-      NumberFactory::create (PairType::Degrees, First{ 90 }, Second{ 15 }));
-  dataStorage.push_back (
-      NumberFactory::create (PairType::Radians, First{ 1 }, Second{ 570 }));
+  crow::SimpleApp app;
+  std::vector<std::unique_ptr<Pair> > dataStorage = storage->loadAll ();
+
+  if (dataStorage.empty ())
+    {
+      dataStorage.push_back (NumberFactory::create (
+          PairType::Degrees, First{ 90 }, Second{ 15 }));
+      dataStorage.push_back (NumberFactory::create (
+          PairType::Radians, First{ 1 }, Second{ 570 }));
+      storage->saveAll (dataStorage);
+    }
 
   CROW_ROUTE (app, "/") ([] (const crow::request &, crow::response &res) {
     res.set_static_file_info ("src/web/index.html");
@@ -26,13 +32,15 @@ main ()
   /// @route POST /api/create/<int>/<int>/<int>
   CROW_ROUTE (app, "/api/create/<int>/<int>/<int>")
       .methods (crow::HTTPMethod::POST) (
-          [&dataStorage] (int typeInt, int f, int s) {
+          [&dataStorage, &storage] (int typeInt, int f, int s) {
             try
               {
                 auto type = static_cast<PairType> (typeInt);
                 dataStorage.push_back (NumberFactory::create (
                     type, First{ static_cast<std::intmax_t> (f) },
                     Second{ static_cast<std::intmax_t> (s) }));
+
+                storage->saveAll (dataStorage);
                 return crow::response (201);
               }
             catch (const std::exception &e)
@@ -60,25 +68,30 @@ main ()
 
   /// @route POST /api/adjust/<int>/<int>
   CROW_ROUTE (app, "/api/adjust/<int>/<int>")
-      .methods (crow::HTTPMethod::POST,
-                crow::HTTPMethod::GET) ([&dataStorage] (int index, int val) {
-        if (index < 0 || index >= static_cast<int> (dataStorage.size ()))
-          {
-            return crow::response (404, "Object index not found");
-          }
-        dataStorage[static_cast<std::size_t> (index)]->increase (val);
-        return crow::response (
-            200, dataStorage[static_cast<std::size_t> (index)]->toString ());
-      });
+      .methods (crow::HTTPMethod::POST, crow::HTTPMethod::GET) (
+          [&dataStorage, &storage] (int index, int val) {
+            if (index < 0 || index >= static_cast<int> (dataStorage.size ()))
+              {
+                return crow::response (404, "Object index not found");
+              }
+            dataStorage[static_cast<std::size_t> (index)]->increase (val);
+
+            storage->saveAll (dataStorage);
+            return crow::response (
+                200,
+                dataStorage[static_cast<std::size_t> (index)]->toString ());
+          });
 
   /// @route POST /api/adjust/<int>
   CROW_ROUTE (app, "/api/adjust/<int>")
       .methods (crow::HTTPMethod::POST,
-                crow::HTTPMethod::GET) ([&dataStorage] (int val) {
+                crow::HTTPMethod::GET) ([&dataStorage, &storage] (int val) {
         for (auto &obj : dataStorage)
           {
             obj->increase (val);
           }
+
+        storage->saveAll (dataStorage);
         return crow::response (200, "All objects modified");
       });
 
