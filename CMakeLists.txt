@@ -18,7 +18,8 @@ find_program(CLANG_TIDY_EXE NAMES "clang-tidy")
 # --- Subdirectories ---
 # Each directory will have its own tiny CMakeLists.txt
 add_subdirectory(src/core)
-# add_subdirectory(src/web)
+add_subdirectory(src/web)
+add_subdirectory(src/database)
 # add_subdirectory(src/gui)
 # add_subdirectory(src/console)
 add_subdirectory(tests)

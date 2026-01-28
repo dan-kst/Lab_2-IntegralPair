@@ -54,6 +54,9 @@ CMakeUserPresets.json
 # External projects
 *-prefix/
 
+### SQLite ###
+*.db
+
 ### Geany IDE###
 *.geany
 *.sh
